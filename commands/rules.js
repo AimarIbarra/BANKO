@@ -9,11 +9,12 @@ module.exports = {
     ),
   async execute(interaction) {
     const rules = [
-        "Rule 1: Do some trolling",
-        "Rule 2: Fuck Dragon (Gay)",
-        "Rule 3: No raiding+spamming servers, that's not trolling that's being retarded and will get you banned from Discord",
-        "Rule 4: DO NOT add people if we're doing group trolling. They can see our mutuals and might catch on",
-        "Rule 5: Remember, ALWAYS have fun"
+        "Rule 1: Do some trolling.",
+        "Rule 2: Fuck Dragon (Gay).",
+        "Rule 3: No raiding+spamming servers, that's not trolling that's being retarded and will get you banned from Discord.",
+        "Rule 4: DO NOT add people if we're doing group trolling. They can see our mutuals and might catch on.",
+        "Rule 5: Do not kill anyone you are trolling.",
+        "Rule 6: Remember, ALWAYS have fun."
     ];
     if(interaction.options.getInteger("rule") != undefined) return interaction.reply(rules[interaction.options.getInteger("rule") - 1]);
 
