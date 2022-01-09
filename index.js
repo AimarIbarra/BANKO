@@ -18,6 +18,15 @@ client.once("ready", () => {
   console.log(`${client.user.tag} is up and running!`);
 });
 
+client.on("messageCreate", async (message) => {
+  console.log("Invoked");
+  message.reply(
+      `Pong!\nLatency is ${
+        Date.now() - message.createdTimestamp
+      }ms. API Latency is ${Math.round(client.ws.ping)}ms`
+    );
+});
+
 client.on("interactionCreate", async (interaction) => {
   if (!interaction.isCommand()) return;
 

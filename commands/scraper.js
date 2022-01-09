@@ -67,59 +67,41 @@ module.exports = {
     const text = interaction.options.getString("text") || "sample text";
     const shot = interaction.options.getBoolean("shot");
     const dest = interaction.options.getString("dest") || "927322681269964800";
-    const newc = interaction.options.getBoolean("new");
 
     const channel = interaction.client.channels.cache.get(dest);
 
-    const puppeteer = require("puppeteer-extra");
-
-    const StealthPlugin = require("puppeteer-extra-plugin-stealth");
-    puppeteer.use(StealthPlugin());
-
-    var userAgent = require("user-agents");
+    const puppeteer = require("puppeteer");
 
     (async () => {
       const browser = await puppeteer.launch({
-        timeout: 0,
-        headless: true,
-        userDataDir: "/tmp/myChromeSession",
+        headless: false,
       });
       const page = await browser.newPage();
+
       try {
-        await page
-          .goto(`https://discord.com/channels/${serv}/${chan}`)
-          .then(
-            channel.send(
-              `Dunkan went to https://discord.com/channels/${serv}/${chan} and is waiting for the textbar to load.`
-            )
-          );
+        await page.goto(`https://discord.com/channels/${serv}/${chan}`, {
+          timeout: 0,
+        });
 
-        if (newc) {
-          await page.setUserAgent(userAgent.toString());
-          await page.waitForSelector(".input-cIJ7To");
-          const selectors = await page.$$(".input-cIJ7To");
-          await selectors[1].type(email);
-          await selectors[2].type(pass);
-          await page.click(".lookFilled-1Gx00P");
-        }
+        channel.send(
+          `Dunkan went to https://discord.com/channels/${serv}/${chan}`
+        );
 
-        await page
-          .waitForSelector(".slateTextArea-1Mkdgw")
-          .then(channel.send("Dunkan is typing."));
+        await page.waitForSelector(".input-cIJ7To");
+        const selectors = await page.$$(".input-cIJ7To");
+        await selectors[1].type(email);
+        await selectors[2].type(pass);
+        await page.click(".lookFilled-1Gx00P");
+
+        await page.waitForSelector(".slateTextArea-1Mkdgw", { timeout: 0 });
+        await channel.send(`Dunakn is about to type "${text}"`);
         await page.type(".slateTextArea-1Mkdgw", text);
-        await page.keyboard
-          .press("Enter")
-          .then(
-            channel.send(
-              "Dunkan sent the message and is waiting one second to close the browser."
-            )
-          );
+        await page.keyboard.press("Enter");
+        await channel.send("Dunkan sent the message.");
 
         if (shot) {
-          await page
-            .screenshot({ path: "./image.jpg" })
-            .then(channel.send("Dunkan took the screenchot."));
-
+          await page.screenshot({ path: "./image.jpg" });
+          await channel.send("Screenshot taken.");
           channel
             .send({
               files: [
@@ -132,14 +114,16 @@ module.exports = {
             .then("Screenshot sent.");
         }
       } catch (err) {
-        channel.send("An wild error! " + err);
+        await channel.send(`A wild error! ${err}`);
       }
 
       setTimeout(async () => {
         await browser.close();
       }, 1000);
+
+      await channel.send("Operation completed, a new operation can start.");
     })();
-    await interaction.reply("Message on its way.");
+    await interaction.reply("Operation started.");
     setTimeout(async () => {
       await interaction.deleteReply();
     }, 5000);
